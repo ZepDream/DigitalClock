@@ -150,7 +150,14 @@ sim\run_sim.bat
 ```
 
 Python 辅助脚本（`extract_docx.py`、`list_images.py`、`map_images.py`、`find_fig.py`）
-都以脚本所在目录为基准查找 `refs/`，换电脑后不需要改路径。
+都以脚本所在目录为基准查找 `refs/`，换电脑后不需要改路径。前三个脚本需要
+`python-docx`，新电脑上执行一次：
+
+```bat
+python -m pip install python-docx
+```
+
+`find_fig.py` 只读 `refs/body_map.txt`，不需要额外依赖。
 
 ---
 

@@ -55,6 +55,7 @@ DigitalClock/
 - [最终方案](docs/05_final_plan.md)
 - [总体设计基线](docs/00_design_baseline.md)
 - [需求对照表](docs/00_traceability_matrix.md)
+- [Git 双机同步说明](docs/06_git_sync.md)
 
 ## 3. Quartus 编译
 
