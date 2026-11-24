@@ -1,0 +1,66 @@
+# ============================================
+# Quartus 编译 / 综合构建产物（可由源码重新生成）
+# ============================================
+db/
+incremental_db/
+output_files/
+greybox_tmp/
+qdb/
+*.qws
+*.qpg
+*.ppf
+*.ddb
+*.cdb
+*.hdb
+*.rdb
+*.tdb
+
+# Quartus 报告与网表
+*.rpt
+*.smsg
+*.summary
+*.jdi
+*.pin
+*.sld
+*.sof
+*.pof
+*.done
+*.sdo
+*.vqm
+*.vo
+*.ver
+*.fsf
+*.jbc
+*.jic
+
+# ============================================
+# ModelSim / 仿真产物
+# ============================================
+sim/work/
+sim/transcript
+transcript
+*.vcd
+*.wlf
+*.wlf.*
+*.log
+vsim.wlf
+modelsim.ini.bak
+
+# ============================================
+# Python / 工具缓存
+# ============================================
+__pycache__/
+*.pyc
+*.pyo
+
+# ============================================
+# DSH 会话 / 编辑器 / 系统文件
+# ============================================
+.dsh-migration/
+.dsh/
+Thumbs.db
+desktop.ini
+.DS_Store
+*.bak
+*.swp
+*~

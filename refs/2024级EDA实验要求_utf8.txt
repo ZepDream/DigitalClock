@@ -1,0 +1,257 @@
+2024级《EDA技术》
+实验要求与注意事项
+一、实验项目名称
+实验一（参考实验指导书实验4-2）：7段数码显示译码器设计
+实验二（参考实验指导书实验4-7）：八位加法器设计
+实验三（参考实验指导书实验4-8）：数控分频器设计
+实验四（参考实验指导书实验5-3）：流水灯设计
+实验五（参考实验指导书实验5-1）：交通灯设计
+
+二、实验报告要求
+1. 实验报告统一在模板基础上填写，每个实验另起一页，注意格式规范，排版整齐。（实验评分重要观测点）
+2. 实验报告不用打印，每位同学的电子文档（注意文件名中学号和姓名要修改）第17周前，由学习委员收集齐全后打包发给任课老师批改和存档。
+3. 实验程序重要语句都必须要添加注释（实验评分重要观测点）
+4. 波形仿真截图放在实验报告中后，波形下方要选取3-5个关键波形点进行波形分析（实验评分重要观测点）。
+5. 下载电路到实验箱后，选2-3个左右测试结果拍照，将照片（把照片中与实验现象无关的部分剪切掉）插入实验报告，并在照片下方进行实验现象的描述（实验评分重要观测点）。
+6. 实验总结要写清楚通过这个实验，学会了什么知识、取得什么收获，要具体到知识点，少写空话套话（实验评分重要观测点）。
+7. 实验报告务必不要抄袭其他同学的或给别人抄袭，一旦发现疑似抄袭情况，抄袭者和被抄袭者，实验成绩计零分。
+切记切记切记不要抄袭，否则后果自负！！！
+三、实验参考程序和注意事项
+实验一（参考实验指导书实验4-2）：7段数码显示译码器设计
+　　　很简单，不作提示。
+实验二（参考实验指导书实验4-7）：八位加法器设计
+　　　很简单，不作提示。
+实验三（参考实验指导书实验4-8）：数控分频器设计
+参考程序：
+module DVF(CLK, D, FOUT);   //数控分频器实验源程序
+   input       CLK;    //实验箱下载时，CLK选用32768Hz
+   input [7:0] D;
+   output      FOUT;
+   reg         FOUT;
+   reg         FULL;
+   reg [7:0]   CNT8;
+   reg         CNT2;            
+   
+	always @(posedge CLK)
+      begin
+		   if (CNT8 == 8'b11111111)
+           begin
+            CNT8 = D;        //当CNT8计数计满时，输入数据D被同步预置给计数器CNT8 
+            FULL <= 1'b1;    //同时使溢出标志信号FULL输出为高电平 
+           end 
+         else
+           begin 
+            CNT8 = CNT8 + 1;   //否则继续作加1计数
+            FULL <= 1'b0;      //且输出溢出标志信号FULL为低电平       
+           end
+      end		
+	
+   always @(posedge FULL)
+     begin
+         CNT2 = (~CNT2);   //如果溢出标志信号FULL为高电平，D触发器输出取反
+         if (CNT2 == 1'b1)      
+            FOUT <= 1'b1;
+         else
+            FOUT <= 1'b0;
+      end
+endmodule 
+
+
+
+
+
+
+仿真结果：
+
+放大结果：
+
+继续放大结果：
+
+
+实验四（参考实验指导书实验5-3）：流水灯设计
+参考程序：
+// Design Name: 扩展板流水灯实验
+// Module Name: liushuideng
+module liushuideng(clk50MHz,led,rst);  
+   input clk50MHz;
+	input rst;
+	output reg [11:0]  led;      //接P1IO口
+	reg clk4hz;
+	reg [24:0] count;
+	
+	always@(posedge clk50MHz )
+		   if(count==25'd6250000)
+	         begin   clk4hz = ~clk4hz;
+	                 count =25'd0;
+　　　　　　　end
+	       else count =count + 1;  
+	always@(posedge clk4hz or negedge rst)
+	  if(!rst)  
+	        led=12'hffe;          //12'hffc=12'b111111100000;led灯为共阳极，低电平点亮。
+		else   led = { led[10:0],led[11] };
+endmodule 	
+
+仿真情况：
+    仿真时，将程序进行修改：if(count==25'd625)   //下载时改回25'd6250000，每次修改程序后，都要进行综合。
+　　仿真总时间1us，clk50MHz周期用0.1ns，要求调出中间信号clk4Hz和count
+波形整体情况：
+
+波形放大：
+
+再次放大：
+
+
+引脚锁定：
+　　由于本实验用系统核心板和流水灯扩展板，时钟信号CLK直接用系统核心板上的50MHz晶振，引脚号为M15,如下图：
+
+　　
+　　
+　　复位信号RST用动态配置IO板上的按键8（模式0）
+
+12个LED的引脚锁定，先看模块实物图中LED的名称，再根据下面引脚图找到该LED的引脚号
+
+
+最后，根据引脚号找到对应IO口编号。
+
+
+实验五（参考实验指导书实验5-1）：交通灯设计
+
+1.先完成clkdiv子模块
+
+//clkdiv子模块参考程序：50MHz的输入时钟分频为1Hz
+module clkdiv(clkin,clk1Hz);  
+input clkin;   //输入时钟频率50MHz
+output clk1Hz; //分频结果为1Hz
+reg clk1Hz;
+reg [25:0]cnt1;  //50M分频所用计数器
+reg full;     //计数器溢出标志信号
+reg cnt2;     //1Hz中间变量
+
+always@(posedge clkin)
+  if(cnt1>=26'd24999999)  //计数器记到25M归零，得到半个周期
+    begin
+      full<=1'b1;
+      cnt1<=26'd0;
+    end 
+  else  begin 
+    cnt1<=cnt1+1'b1; 
+	 full<=1'b0;
+	 end
+ always @ (posedge full) 
+    begin 
+	 cnt2<=~cnt2;
+	 clk1Hz=cnt2;
+	 end
+endmodule 
+
+（仿真测试有两种办法，方法一是按上述源程序仿真，因计数器每次要计到24999999，仿真总时间要设置100us，clk要设置0.01ns,仿真运行时间十分钟以上，才能得到比较完整结果；方法二是把24999999改为249，只验证程序是否有问题，用500分频即可，仿真时间短，容易看到仿真效果，仿真结束后再改回24999999并再次编译，推荐用方法二仿真）
+自带仿真器仿真结果：（总仿真时间1us，clkin周期0.1ns）
+
+放大情况：
+
+
+选做：以下是modelsim仿真器计数到24999999的仿真效果，记得把中间变量添加到波形中一起观察
+
+2.完成traffic子模块
+//traffic子模块
+module traffic(clk, r1, y1, g1, r2, y2, g2);
+   input      clk;
+   output     r1;
+   reg        r1;
+   output     y1;
+   reg        y1;
+   output     g1;
+   reg        g1;
+   output     r2;
+   reg        r2;
+   output     y2;
+   reg        y2;
+   output     g2;
+   reg        g2;
+   parameter  yellow_time = 5;
+   parameter  green_time = 20;
+   reg [1:0]  state;
+   reg [4:0]  count;
+   always @(posedge clk)
+      
+         case (state)
+            0 :
+               begin
+                  r1 <= 1'b0;
+                  y1 <= 1'b0;
+                  g1 <= 1'b1;
+                  r2 <= 1'b1;
+                  y2 <= 1'b0;
+                  g2 <= 1'b0;
+               end
+            1 :
+               begin
+                  r1 <= 1'b0;
+                  y1 <= 1'b1;
+                  g1 <= 1'b0;
+                  r2 <= 1'b1;
+                  y2 <= 1'b0;
+                  g2 <= 1'b0;
+               end
+            2 :
+               begin
+                  r1 <= 1'b1;
+                  y1 <= 1'b0;
+                  g1 <= 1'b0;
+                  r2 <= 1'b0;
+                  y2 <= 1'b0;
+                  g2 <= 1'b1;
+               end
+            default :
+               begin
+                  r1 <= 1'b1;
+                  y1 <= 1'b0;
+                  g1 <= 1'b0;
+                  r2 <= 1'b0;
+                  y2 <= 1'b1;
+                  g2 <= 1'b0;
+               end
+         endcase
+   
+   always @(posedge clk)       
+      begin
+         if (count == 5'd0)
+         begin
+            if (state == 2'd3)
+               state <= 2'd0;
+            else
+               state <= state + 1'b1;
+            case (state)
+               2'b00 :
+                  count <= yellow_time;
+               2'b01 :
+                  count <= green_time;
+               2'b10 :
+                  count <= yellow_time;
+               default :
+                  count <= green_time;
+            endcase
+         end
+         else
+            count = count - 1'b1;
+      end   
+endmodule
+自带仿真器仿真结果：（仿真总时间1us，clk周期10ns,把输出端顺序调整一下再保存仿真）
+
+modelsim仿真结果：
+
+3.使用原理图输入法完成顶层电路设计
+
+　　在上图中，可以通过顶层原理图修改traffic子模块中黄灯和绿灯点亮的时间参数，输出端名称中含义：N北S南W西E东   R红Y黄G绿
+　　编译顶层文件时，记得把两个子模块的源程序加入顶层文件的工程中。
+4. 引脚锁定方法类似实验四中流水灯各个LED
+
+5.下载到实验箱观察实验结果
+注意：绿色LED不太亮，要仔细才能看清
+
+
+
+
+3
+
+
