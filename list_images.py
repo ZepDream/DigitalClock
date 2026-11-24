@@ -1,11 +1,13 @@
-import docx, os
+import os
+
+import docx
 from docx.oxml.ns import qn
 
-base = r'C:\ZZJ\APP\intelFPGA\17.1\MyprojectsZZJ\DigitalClock\refs'
-p = os.path.join(base, 'EDA实验箱使用手册（修订版）.docx')
+BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'refs')
+p = os.path.join(BASE, 'EDA实验箱使用手册（修订版）.docx')
 d = docx.Document(p)
 rels = d.part.rels
-outdir = os.path.join(base, 'images')
+outdir = os.path.join(BASE, 'images')
 os.makedirs(outdir, exist_ok=True)
 idx = 0
 last_text = ''

@@ -1,7 +1,10 @@
-import docx, os, glob
+import glob
+import os
 
-base = r'C:\ZZJ\APP\intelFPGA\17.1\MyprojectsZZJ\DigitalClock\refs'
-for p in glob.glob(os.path.join(base, '*.docx')):
+import docx
+
+BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'refs')
+for p in glob.glob(os.path.join(BASE, '*.docx')):
     try:
         d = docx.Document(p)
     except Exception as e:
@@ -21,5 +24,6 @@ for p in glob.glob(os.path.join(base, '*.docx')):
                 cells.append(' '.join(c.text.split()))
             out.append(' | '.join(cells))
     dst = os.path.splitext(p)[0] + '.extracted.txt'
-    open(dst, 'w', encoding='utf-8').write('\n'.join(out))
+    with open(dst, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(out))
     print(os.path.basename(p), len(out), 'blocks ->', os.path.basename(dst))

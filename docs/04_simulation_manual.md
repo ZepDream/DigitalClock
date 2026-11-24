@@ -45,12 +45,27 @@
 
 ### 1.3 路径
 
-建议把工程放在**不含中文、不含空格**的路径下。  
-当前工程路径：
+本仓库不再依赖某台电脑的固定盘符，整个 `DigitalClock` 目录放在任意本地路径即可。建议路径**不含中文、不含空格**，例如：
 
 ```text
-C:\ZZJ\APP\intelFPGA\17.1\MyprojectsZZJ\DigitalClock
+D:\Projects\DigitalClock
 ```
+
+`sim\run_sim.bat` 会按下面的顺序自动查找 ModelSim：
+
+1. 环境变量 `MODELSIM_BIN`；
+2. 已经在 `PATH` 里的 `vsim.exe`；
+3. `%QUARTUS_ROOTDIR%\..\modelsim_ase\win32aloem`；
+4. 常见的 Quartus / ModelSim 安装目录。
+
+如果自动查找失败，在运行前手动指定一次即可：
+
+```bat
+set MODELSIM_BIN=G:\APP\Quartus\17.1\modelsim_ase\win32aloem
+sim\run_sim.bat
+```
+
+`MODELSIM_BIN` 要指向包含 `vsim.exe`、`vlog.exe`、`vlib.exe` 的 `win32aloem` 目录。使用 ModelSim GUI 时不受影响，直接在 `sim` 目录执行 `.do` 脚本即可。
 
 如果 ModelSim 启动时报缺少 DLL，通常是缺少 32 位 VC++ 运行库；安装 Microsoft Visual C++ 2013 Redistributable (x86) 即可。
 
@@ -422,7 +437,7 @@ $dumpvars(0, tb_digital_clock_top);
 | 现象 | 原因 | 解决 |
 |---|---|---|
 | `Failed to open design unit file "..\rtl\*.v"` | Windows 下 `vlog` 没展开通配符 | 用 `compile.do` 或 `run_sim.bat` |
-| `vsim` 不是内部或外部命令 | PATH 没加 ModelSim | 用 `run_sim.bat`，或把 `win32aloem` 加入 PATH |
+| `vsim` 不是内部或外部命令 | PATH 没加 ModelSim | 用 `run_sim.bat`（自动查找），或设置 `MODELSIM_BIN`，或把 `win32aloem` 加入 PATH |
 | 启动 ModelSim 报缺少 DLL | 缺 32 位 VC++ 运行库 | 安装 VC++ 2013 Redistributable (x86) |
 | `Design unit 'tb_digital_clock_top' not found` | 没编译 testbench | 先 `do compile.do` |
 | 没有波形 | 没加信号，或仿真没跑 | `do wave_all.do`，`run -all` |

@@ -82,6 +82,12 @@ DigitalClock/
 sim\run_sim.bat
 ```
 
+脚本会自动查找本机 ModelSim（`MODELSIM_BIN` → `PATH` → Quartus 安装目录），不再写死盘符。找不到时先执行：
+
+```bat
+set MODELSIM_BIN=G:\APP\Quartus\17.1\modelsim_ase\win32aloem
+```
+
 ### 方式二：ModelSim GUI
 
 在 `sim` 目录打开 ModelSim，Transcript 中执行：
@@ -157,3 +163,31 @@ run -all
 - LED1 为 1 Hz 心跳；LED2 闹钟开关；LED3 秒表后台；LED4 倒计时后台/到期闪烁。
 - 上板照片需要实验箱实物补拍，文档中已留位置。
 - 未经上板实测的项：蜂鸣器实际频率、按键抖动特性、3.3 V 接口波形。
+
+## 9. 本地适配与 Git 双机同步
+
+本目录是 <https://github.com/ZepDream/DigitalClock.git> 的 `main` 分支工作区。本地适配内容：
+
+- `sim\run_sim.bat` 不再写死另一台电脑的 `C:\ZZJ\...`，会自动查找本机 ModelSim，也可用 `MODELSIM_BIN` 指定；
+- `extract_docx.py`、`list_images.py`、`map_images.py`、`find_fig.py` 改为基于脚本所在目录查找 `refs/`，换电脑不用改路径；
+- 编译/仿真产物由 `.gitignore` 排除，不会把 `db/`、`output_files/`、`sim/work/`、`*.vcd` 提交上去。
+
+常用 Git 命令：
+
+```bat
+git pull --rebase
+git status
+git add -A
+git commit -m "说明这次改了什么"
+git push
+```
+
+两台电脑的完整同步流程（首次接入、旧目录迁移、冲突处理、验证清单）见
+[Git 双机同步说明](docs/06_git_sync.md)。
+
+本机验证结果：
+
+```text
+Quartus 17.1 全编译：0 errors, 1 warning（AN447 3.3 V 提示）
+ModelSim-ASE 自检：==== ALL TESTS PASSED ==== / 74 PASS, 0 ERROR
+```
