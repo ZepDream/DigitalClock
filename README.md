@@ -5,7 +5,7 @@
 - 24 小时时钟 `HH:MM:SS`，可调时、分、秒
 - 闹钟 `HH:MM:SS`，可开关，LED2 指示；到点响 3 下 × 2 组
 - 秒表 `MM:SS:CC`，10 ms 分辨率，启动/暂停/清零，最大 99:59.99
-- 倒计时 `HH:MM:SS`，启动/暂停/复位/清零；到 0 响 2 下 × 1 组
+- 倒计时 `HH:MM:SS`，启动/暂停/恢复设定值；到 0 响 2 下 × 1 组
 - 8 位动态数码管：模式标识 + 6 位数值
 - 模式 9 键 1～8 + 核心板 K1～K4
 - 上电复位 + K1 手动复位
@@ -36,11 +36,11 @@ DigitalClock/
 | `core_key` | 核心键消抖、按下脉冲、K2/K3 连发 |
 | `key_input` | 8 路 nibble + 4 路核心键 |
 | `key_ctrl` | 模式/设置状态机、光标、按键动作译码 |
-| `bcd_digit_adj` | 24 位 BCD 按位加/减 |
+| `bcd_digit_adj` | 24 位 BCD 按位加减（个位满 10 进十位、满 60 归零） |
 | `time_counter` | 正式时钟 + 编辑缓冲 |
 | `alarm_ctrl` | 闹钟设置、开关、比较、单次触发 |
 | `stopwatch` | 秒表 10 ms BCD 计数 |
-| `countdown` | 倒计时设定/剩余/启动/暂停/复位/清零 |
+| `countdown` | 倒计时设定/剩余/启动/暂停/恢复设定值 |
 | `beep_ctrl` | 3 下×2 组、2 下×1 组、优先级、静音 |
 | `buzzer_tone` | 2.7 kHz 低有效方波 |
 | `display_ctrl` | 8 位扫描、模式选择、闪烁、LED |
@@ -56,6 +56,21 @@ DigitalClock/
 - [总体设计基线](docs/00_design_baseline.md)
 - [需求对照表](docs/00_traceability_matrix.md)
 - [Git 双机同步说明](docs/06_git_sync.md)
+
+### 初学者教程（不会 Verilog / 不会 Quartus 的先看这个）
+
+- [教程总览与学习路线](docs/tutorial/README.md)
+- [01 从 C 到 Verilog](docs/tutorial/01_从C到Verilog.md)
+- [02 认识这个工程](docs/tutorial/02_认识这个工程.md)
+- [03 Quartus 17.1 全流程](docs/tutorial/03_Quartus全流程.md)
+- [04 顶层与连接](docs/tutorial/04_顶层与连接.md)
+- [05 模块解读（一）：时钟、按键、控制](docs/tutorial/05_模块解读_一.md)
+- [06 模块解读（二）：计时、显示、蜂鸣](docs/tutorial/06_模块解读_二.md)
+- [07 Verilog 语法速查](docs/tutorial/07_Verilog语法速查.md)
+- [08 仿真实战](docs/tutorial/08_仿真实战.md)
+- [09 断点与调试](docs/tutorial/09_断点与调试.md)
+- [10 上板与排错](docs/tutorial/10_上板与排错.md)
+- [11 附录：引脚表、报错速查、术语表](docs/tutorial/11_附录.md)
 
 ## 3. Quartus 编译
 
@@ -110,7 +125,7 @@ run -all
 
 ```text
 ==== ALL TESTS PASSED ====
-74 PASS, 0 ERROR
+82 PASS, 0 ERROR
 ```
 
 ## 5. 波形图片
@@ -143,7 +158,7 @@ run -all
 | 50 MHz | `M15` |
 | K1/K2/K3/K4 | `P9/N9/M10/P11` |
 | 蜂鸣器 | `T13` |
-| 段选 `g..dp` | `C2,D1,B3,A3,B5,A5,B7,B6` |
+| 段选 `g..dp` | `D1,B3,A3,B5,A5,B7,B6,C2`（实测段序，见教程 11 章） |
 | 位选 数码8..1 | `L4,R1,N1,P2,K1,L2,G1,J2` |
 | 模式 9 按键 | `PI[15:0]`、`PIO[15:0]` |
 
@@ -190,5 +205,5 @@ git push
 
 ```text
 Quartus 17.1 全编译：0 errors, 1 warning（AN447 3.3 V 提示）
-ModelSim-ASE 自检：==== ALL TESTS PASSED ==== / 74 PASS, 0 ERROR
+ModelSim-ASE 自检：==== ALL TESTS PASSED ==== / 82 PASS, 0 ERROR
 ```

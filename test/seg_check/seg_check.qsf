@@ -1,0 +1,64 @@
+set_global_assignment -name FAMILY "Cyclone 10 LP"
+set_global_assignment -name DEVICE 10CL006YU256C8G
+set_global_assignment -name TOP_LEVEL_ENTITY seg_check
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 17.1
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
+set_global_assignment -name NOMINAL_CORE_SUPPLY_VOLTAGE 1.2V
+set_global_assignment -name NUM_PARALLEL_PROCESSORS 4
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
+
+set_global_assignment -name VERILOG_FILE seg_check.v
+
+#------------------------------------------------------------------------------
+# 50 MHz system clock
+#------------------------------------------------------------------------------
+set_location_assignment PIN_M15 -to clk50
+
+#------------------------------------------------------------------------------
+# 8-digit 7-segment display: segments {g,f,e,d,c,b,a,dp}
+#------------------------------------------------------------------------------
+set_location_assignment PIN_C2 -to seg_n[7]
+set_location_assignment PIN_D1 -to seg_n[6]
+set_location_assignment PIN_B3 -to seg_n[5]
+set_location_assignment PIN_A3 -to seg_n[4]
+set_location_assignment PIN_B5 -to seg_n[3]
+set_location_assignment PIN_A5 -to seg_n[2]
+set_location_assignment PIN_B7 -to seg_n[1]
+set_location_assignment PIN_B6 -to seg_n[0]
+
+#------------------------------------------------------------------------------
+# Digit enables: dig_n[0]=digit1 (rightmost) ... dig_n[7]=digit8
+#------------------------------------------------------------------------------
+set_location_assignment PIN_J2 -to dig_n[0]
+set_location_assignment PIN_G1 -to dig_n[1]
+set_location_assignment PIN_L2 -to dig_n[2]
+set_location_assignment PIN_K1 -to dig_n[3]
+set_location_assignment PIN_P2 -to dig_n[4]
+set_location_assignment PIN_N1 -to dig_n[5]
+set_location_assignment PIN_R1 -to dig_n[6]
+set_location_assignment PIN_L4 -to dig_n[7]
+
+#------------------------------------------------------------------------------
+# LEDs
+#------------------------------------------------------------------------------
+set_location_assignment PIN_T15 -to led_n[0]
+set_location_assignment PIN_M9  -to led_n[1]
+set_location_assignment PIN_L9  -to led_n[2]
+set_location_assignment PIN_T14 -to led_n[3]
+
+#------------------------------------------------------------------------------
+# 3.3 V LVTTL
+#------------------------------------------------------------------------------
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to clk50
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to seg_n[*]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to dig_n[*]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to led_n[*]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "8MA" -to seg_n[*]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "8MA" -to dig_n[*]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "8MA" -to led_n[*]
+
+set_global_assignment -name LAST_QUARTUS_VERSION "17.1.0 Standard Edition"
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"

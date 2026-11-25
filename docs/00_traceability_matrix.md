@@ -85,16 +85,16 @@
 | 编号 | 行为 | 条件 | 实现 | 测试 | 文档 |
 |---|---|---|---|---|---|
 | CD-01 | 6 位可设，最大 23:59:59 | 设置态 | `preset_bcd` 6 位 BCD | TB_CD | D1 §5.4 |
-| CD-02 | 启动/暂停 | Cd 未到期且剩余≠0，key5 | `running` 翻转 | TB_CD | D1 §5.4 |
-| CD-03 | 复位到设定值 | 未运行，key6 | `remain_bcd <= preset_bcd` | TB_CD | D1 §5.4 |
-| CD-04 | 清零到 0 | 未运行且非设置，key2 | `remain_bcd <= 0` | TB_CD | D1 §5.4 |
-| CD-05 | 0 启动无效 | `remain_bcd==0`，key5 | 不启动、不响 | TB_CD | D1 §5.4 |
+| CD-02 | 启动/暂停 | Cd 未到期且剩余≠0，key1 | `running` 翻转 | TB_CD | D1 §5.4 |
+| CD-03 | 恢复设定值 | 未运行，key2 | `remain_bcd <= preset_bcd` | TB_CD | D1 §5.4 |
+| CD-04 | 清零到 0 | 已取消（需要 0 就在设置里改） | — | — | D1 §5.4 |
+| CD-05 | 0 启动无效 | `remain_bcd==0`，key1 | 不启动、不响 | TB_CD | D1 §5.4 |
 | CD-06 | 每秒减 1 | `tick_1hz` 且运行 | `remain_bcd` 减 1 | TB_CD | D3 §5.4 |
 | CD-07 | 1→0 触发 | 减到 0 | `expired=1`，`expire_pulse` 单周期 | TB_CD | D3 §5.4 |
 | CD-08 | 2 下×1 组 | `expire_pulse` | 200 ms 响/200 ms 停，仅一组 | TB_BEEP | D3 §6.5；D2 §5 |
 | CD-09 | 后台运行 | 切出 Cd | `running` 保持，LED4 指示 | TB_MODE | D1 §5.4 |
 | CD-10 | 进入设置条件 | `!running && !expired`，key7/K4 | 进入/确认 | TB_CD | D1 §5.4 |
-| CD-11 | 到期后恢复 | 到期后 key6 | 复位并清 `expired`，可再启动 | TB_CD | D1 §5.4 |
+| CD-11 | 到期后恢复 | 到期后 key2 | 复位并清 `expired`，可再启动 | TB_CD | D1 §5.4 |
 | CD-12 | 设置冻结/确认/取消 | 设置态 | 设定值/剩余值规则按基线 | TB_CD | D1 §5.4 |
 
 ### 2.5 显示（R5）
@@ -144,15 +144,15 @@
 | key7 | AL | 进入/确认设置 | `alarm_ctrl` | TB_AL_SET | D1 §5.3 |
 | key7 | Cd `!running && !expired` | 进入/确认设置 | `countdown` | TB_CD | D1 §5.4 |
 | key7 | Cd 运行/到期 | 无操作 | — | TB_CD | D1 §5.4 |
-| key6 | Cd 未运行 | 复位到设定值，清 `expired` | `countdown` | TB_CD | D1 §5.4 |
-| key6 | Cd 运行 | 无操作 | — | TB_CD | D1 §5.4 |
-| key5 | Cd 未到期且剩余≠0 | 启动/暂停 | `countdown` | TB_CD | D1 §5.4 |
-| key5 | Cd 到期或剩余=0 | 无操作 | — | TB_CD | D1 §5.4 |
+| key2 | Cd 未运行 | 恢复设定值，清 `expired` | `countdown` | TB_CD | D1 §5.4 |
+| key2 | Cd 运行 | 无操作 | — | TB_CD | D1 §5.4 |
+| key1 | Cd 未到期且剩余≠0 | 启动/暂停 | `countdown` | TB_CD | D1 §5.4 |
+| key1 | Cd 到期或剩余=0 | 无操作 | — | TB_CD | D1 §5.4 |
 | key4 | 设置态 | 光标左移，0～5 循环 | `key_ctrl` | TB_CL_SET | D1 §5.3 |
 | key3 | 设置态 | 光标右移，0～5 循环 | `key_ctrl` | TB_CL_SET | D1 §5.3 |
 | key2 | 设置态 | 选中位 +1（按范围回绕） | `time_counter`/`alarm_ctrl`/`countdown` | TB_CL_SET | D1 §5.3 |
 | key2 | St | 清零并暂停 | `stopwatch` | TB_ST | D1 §5.3 |
-| key2 | Cd 未运行且非设置 | 清零到 00:00:00 | `countdown` | TB_CD | D1 §5.4 |
+| key6 | 全部模式 | 无操作（复位已并入键 2） | — | — | D1 §5.4 |
 | key2 | CL/AL 正常 | 无操作 | — | TB_CL_SET | D1 §5.3 |
 | key1 | 设置态 | 选中位 −1（按范围回绕） | `time_counter`/`alarm_ctrl`/`countdown` | TB_CL_SET | D1 §5.3 |
 | key1 | AL 正常 | 闹钟开关，LED2 指示 | `alarm_ctrl` | TB_AL_SET | D1 §5.3 |
@@ -213,7 +213,7 @@
 | `rtl/core_key.v` | R6 | 核心键消抖、按下脉冲、K2/K3 连发 | TB_KEY | D1 §4/§6 |
 | `rtl/key_input.v` | R6 | 8 路 nibble + 4 路核心键 | TB_KEY | D1 §6 |
 | `rtl/key_ctrl.v` | R6, R7 | 模式 FSM、设置 FSM、光标、动作译码 | TB_MODE, TB_CL_SET | D1 §6；D3 §6 |
-| `rtl/bcd_digit_adj.v` | R1, R2, R4 | 24 位 BCD 按位加/减、边界回绕 | TB_CL_SET, TB_CD | D1 §5.5 |
+| `rtl/bcd_digit_adj.v` | R1, R2, R4 | 24 位 BCD 按位加减、段内进位/借位 | TB_CL_SET, TB_CD | D1 §5.5 |
 | `rtl/time_counter.v` | R1 | BCD 走秒、进位、编辑缓冲 | TB_TICK, TB_CL_SET | D3 §5.1 |
 | `rtl/alarm_ctrl.v` | R2 | BCD 设置、比较、单次触发、开关 | TB_AL_SET, TB_ALARM | D3 §5.2 |
 | `rtl/stopwatch.v` | R3 | 10 ms BCD、启动/暂停/清零/自动停 | TB_ST | D3 §5.3 |
@@ -222,7 +222,7 @@
 | `rtl/buzzer_tone.v` | R2, R4 | 2.7 kHz 方波、低有效 | TB_BEEP | D2 §5 |
 | `rtl/display_ctrl.v` | R5 | 8 位扫描、模式选择、闪烁、小数点、LED1 心跳 | TB_DISPLAY | D3 §5.5 |
 | `rtl/seg_decode.v` | R5 | 七段译码、字符集 | TB_DISPLAY | D3 §5.5 |
-| `sim/tb_digital_clock_top.v` | R1～R8 | 9 组用例、74 个 PASS 的自检 testbench | 全部 | D4 §7 |
+| `sim/tb_digital_clock_top.v` | R1～R8 | 10 组用例、82 个 PASS 的自检 testbench | 全部 | D4 §7 |
 | `sim/compile.do` | R10 | 建库、编译 RTL/testbench | 全部 | D4 §5 |
 | `sim/run_sim.do` | R10 | 编译、加载、加波形、运行 | 全部 | D4 §5 |
 | `sim/run_sim.bat` | R10 | Windows 一键批处理仿真 | 全部 | D4 §5 |
@@ -238,7 +238,7 @@
 |---|---|---|
 | 需求 | 11 | R1～R11 全部有落点 |
 | 功能行为 | 6 组 52 条 | CLK 8、AL 8、ST 6、CD 12、DP 9、KEY 9（含跨需求重叠） |
-| 测试用例 | 9 组 / 74 个检查 | testbench 输出 74 个 PASS、0 ERROR |
+| 测试用例 | 10 组 / 82 个检查 | testbench 输出 82 个 PASS、0 ERROR |
 | RTL 模块 | 15 个 | 见 §6 |
 | 仿真/脚本 | 5 个 | testbench + compile/run/wave/bat |
 | 说明书 | 5 份 + 基线 | D0～D5 |
@@ -248,7 +248,7 @@
 | 项目 | 结果 |
 |---|---|
 | ModelSim 编译 | 0 errors, 0 warnings |
-| 自检 testbench | `ALL TESTS PASSED`，74 PASS / 0 ERROR |
+| 自检 testbench | `ALL TESTS PASSED`，82 PASS / 0 ERROR |
 | Quartus 全编译 | 0 errors，1 warning（AN447 3.3 V 接口提示） |
 | 逻辑单元 | 1,584 / 6,272（25%） |
 | 寄存器 | 680 |
@@ -261,13 +261,13 @@
 | 编号 | 事项 | 影响 | 计划 |
 |---|---|---|---|
 | O1 | RTL 代码已完成 | 已通过 ModelSim 编译和 Quartus 综合/布局布线 | 完成 |
-| O2 | testbench 已完成 | 9 组用例全部通过 | 完成 |
+| O2 | testbench 已完成 | 10 组用例全部通过 | 完成 |
 | O3 | Quartus 工程已完成 | 已生成 `.sof`、资源/时序报告 | 完成 |
 | O4 | 上板照片未拍 | D5 的图 7-2 只能留占位 | 用户上板后补拍 |
 | O5 | 蜂鸣器实际频率未测 | 2.7 kHz 是设计值，需实测确认 | 上板用示波器/逻辑分析仪测 `T13` |
 | O6 | 按键抖动特性未实测 | 20 ms 是保守值，需上板验证 | 上板按 1/10/100 次观察丢键/重键 |
 | O7 | LED1 功能已分配 | 已实现 1 Hz 心跳 | 完成 |
-| O8 | 倒计时到期后 key6 复位、key5 再启动 | TB_CD 已覆盖 | 完成 |
+| O8 | 倒计时到期后 key2 恢复、key1 再启动 | TB_CD 已覆盖 | 完成 |
 
 > O1～O3、O7、O8 已完成；O4～O6 需要实验箱实物才能关闭。
 

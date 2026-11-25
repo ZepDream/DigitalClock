@@ -1,4 +1,4 @@
-﻿signal,fpga_pin
+signal,fpga_pin
 buzzer,T13
 clk50,M15
 dig_n[0],J2
@@ -49,11 +49,11 @@ pio_in[6],B1
 pio_in[7],A4
 pio_in[8],P3
 pio_in[9],L3
-seg_n[0],B6
-seg_n[1],B7
-seg_n[2],A5
-seg_n[3],B5
-seg_n[4],A3
-seg_n[5],B3
-seg_n[6],D1
-seg_n[7],C2
+seg_n[0],C2
+seg_n[1],B6
+seg_n[2],B7
+seg_n[3],A5
+seg_n[4],B5
+seg_n[5],A3
+seg_n[6],B3
+seg_n[7],D1

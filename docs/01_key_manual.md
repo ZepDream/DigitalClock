@@ -204,11 +204,11 @@ K1 用 `REPEAT_EN=0`，只做复位；K2/K3 用 `REPEAT_EN=1`；K4 只做确认�
 | 8 | 转 AL；设置中取消转 AL | 转 St；设置中取消转 St | 转 Cd | 转 CL；设置中取消转 CL |
 | 7 | 进入/确认设置 | 进入/确认设置 | — | 未运行且未到期：进入/确认设置；运行/到期：— |
 | 6 | — | — | — | 未运行：复位到设定值；运行：— |
-| 5 | — | — | — | 启动/暂停 |
+| 5 | — | — | — | —（已改到键 1） |
 | 4 | 设置：光标左移 | 设置：光标左移 | — | 设置：光标左移 |
 | 3 | 设置：光标右移 | 设置：光标右移 | — | 设置：光标右移 |
-| 2 | 设置：+1 | 设置：+1 | 清零并暂停 | 未运行：清零到 0；设置：+1 |
-| 1 | 设置：−1 | 正常：闹钟开关；设置：−1 | 启动/暂停 | 设置：−1 |
+| 2 | 设置：+1 | 设置：+1 | 清零并暂停 | 未运行：恢复设定值；设置：+1 |
+| 1 | 设置：−1 | 正常：闹钟开关；设置：−1 | 启动/暂停 | 正常：启动/暂停；设置：−1 |
 
 ### 5.2 核心板按键
 
@@ -254,9 +254,8 @@ K1 用 `REPEAT_EN=0`，只做复位；K2/K3 用 `REPEAT_EN=1`；K4 只做确认�
 ```text
 1. 键 8 切到 Cd
 2. 键 7/K4 进入设置，调整时、分、秒，确认
-3. 键 5 启动/暂停
-4. 键 6 复位到设定值
-5. 键 2 清零到 0
+3. 键 1 启动/暂停
+4. 键 2 恢复设定值（清零到 0 已取消，需要 0 就在设置里改）
 ```
 
 ### 5.4 光标与数字范围
@@ -272,7 +271,8 @@ cursor = 0  1  2  3  4  5
 - 时十位 0～2；
 - 时个位在时十位为 2 时 0～3，否则 0～9；
 - 分/秒十位 0～5，个位 0～9；
-- 只改选中位，不向相邻位进位。
+- 个位满 10 向本段十位进 1；分/秒满 60 归零、时满 24 归零；十位只在本段循环。
+- 减法对称借位：00 − 1 → 59（分/秒）或 23（时）。
 
 ### 5.5 键 8 的“取消”是什么
 
@@ -574,9 +574,8 @@ else begin
         MODE_AL: if (key_press[0]) alarm_en_toggle <= 1'b1;
         MODE_ST: if (key_press[0]) sw_start_pause <= 1'b1;
                  else if (key_press[1]) sw_clear <= 1'b1;
-        MODE_CD: if (key_press[4]) cd_start_pause <= 1'b1;
-                 else if (key_press[5] && !cd_running) cd_reset <= 1'b1;
-                 else if (key_press[1] && !cd_running) cd_clear <= 1'b1;
+        MODE_CD: if (key_press[0]) cd_start_pause <= 1'b1;
+                 else if (key_press[1] && !cd_running) cd_reset <= 1'b1;
         default: ;
     endcase
 end
@@ -622,7 +621,6 @@ key_ctrl u_key_ctrl (
     .sw_clear(sw_clear),
     .cd_start_pause(cd_start_pause),
     .cd_reset(cd_reset),
-    .cd_clear(cd_clear),
     .beep_silence(beep_silence)
 );
 ```

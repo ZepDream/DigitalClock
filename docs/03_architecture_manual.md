@@ -54,7 +54,7 @@ digital_clock_top
 │   ├── nibble_key × 8   模式 9 的 8 路 4 位按键
 │   └── core_key × 4     核心板 K1~K4
 ├── key_ctrl             模式 FSM + 设置 FSM + 动作译码
-├── bcd_digit_adj × 6    24 位 BCD 按位加/减
+├── bcd_digit_adj × 6    24 位 BCD 按位加减（段内进位）
 ├── time_counter         正式时钟 + 编辑缓冲
 ├── alarm_ctrl           闹钟设置、开关、比较、触发
 ├── stopwatch            秒表
@@ -172,7 +172,7 @@ module digital_clock_top #(
 | K3 − | `M10` |
 | K4 确认 | `P11` |
 | 蜂鸣器 | `T13` |
-| 段选 `g..dp` | `C2,D1,B3,A3,B5,A5,B7,B6` |
+| 段选 `g..dp` | `D1,B3,A3,B5,A5,B7,B6,C2`（实测段序，详见 `docs/00_board_config.md` 3.3） |
 | 位选 数码8..1 | `L4,R1,N1,P2,K1,L2,G1,J2` |
 
 > 位选 `dig_n[0]` 对应最右边的数码 1，`dig_n[7]` 对应最左边的数码 8。
@@ -306,13 +306,13 @@ tick_100hz ──► 厘秒 00~99 ──► 秒 00~59 ──► 分 00~99
 preset_bcd ──► remain_bcd ──► 每秒减 1 ──► 00:00:00
                    │                         │
                    │                         └─ expire_pulse
-                   └─ key6 复位到 preset
+                   └─ key2 恢复 preset
 ```
 
-- key5 启动/暂停。
-- key6 未运行时复位到设定值。
-- key2 未运行时清零到 0。
-- 剩余为 0 时 key5 启动无效，所以不会“0 启动立刻响”。
+- key1 启动/暂停（与秒表同键）。
+- key2 未运行时恢复设定值。
+- key6 空出；清零到 0 改为在设置里改。
+- 剩余为 0 时 key1 启动无效，所以不会“0 启动立刻响”。
 - 只有从 `00:00:01` 减到 `00:00:00` 才产生 `expire_pulse`。
 
 ### 5.6 显示 `display_ctrl`
@@ -327,7 +327,7 @@ d[7] d[6] | d[5] d[4] | d[3] d[2] | d[1] d[0]
 - 段选低有效，段码按 `{g,f,e,d,c,b,a,dp}`。
 - 小数点在第 4 位和第 2 位（`d[4]`、`d[2]`），显示成 `HH.MM.SS` 或 `MM.SS.CC`。
 - 模式标识：`CL`、`AL`、`St`、`Cd`。
-- 设置时选中位 2 Hz 闪烁；CL/AL 设置时模式标识也闪烁；Cd 运行/暂停/到期时模式标识闪烁。
+- 设置时选中位 2 Hz 闪烁；CL/AL 设置时模式标识也闪烁；AL 正常态闹钟打开时模式标识 1 Hz 慢闪（确认闹钟已开）；Cd 运行/暂停/到期时同样 1 Hz 慢闪。
 
 实际扫描波形：
 
@@ -392,7 +392,6 @@ d[7] d[6] | d[5] d[4] | d[3] d[2] | d[1] d[0]
 | `sw_clear` | `stopwatch` | St 清零 |
 | `cd_start_pause` | `countdown` | Cd 启动/暂停 |
 | `cd_reset` | `countdown` | Cd 复位到设定值 |
-| `cd_clear` | `countdown` | Cd 清零到 0 |
 | `beep_silence` | `beep_ctrl` | 任意键静音 |
 
 > 三个编辑模块都接收 `mode`，只在自己的模式下响应 `edit_*` / `digit_*`，避免在 AL 设置时误改时钟编辑值。

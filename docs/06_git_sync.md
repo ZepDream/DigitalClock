@@ -132,7 +132,7 @@ git rebase --abort
 
 4. 解决完再 `git push`。
 
-Verilog 文件冲突时，优先以“功能正确、能通过 `sim\run_sim.bat` 的 74 个 PASS”为准；文档冲突可以两边内容合并。
+Verilog 文件冲突时，优先以“功能正确、能通过 `sim\run_sim.bat` 的 82 个 PASS”为准；文档冲突可以两边内容合并。
 
 ---
 
@@ -170,7 +170,7 @@ sim\run_sim.bat
 ```
 
 - `git status`：工作区干净，或只剩你正在改的文件；
-- `sim\run_sim.bat`：最后输出 `==== ALL TESTS PASSED ====` 和 `74 PASS, 0 ERROR`；
+- `sim\run_sim.bat`：最后输出 `==== ALL TESTS PASSED ====` 和 `82 PASS, 0 ERROR`；
 - Quartus：`Processing -> Start Compilation`，确认 `0 errors`，生成 `output_files/DigitalClock.sof`；
 - 上板前确认实验箱模式为 **No.9**，再下载 `.sof`。
 

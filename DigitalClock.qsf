@@ -43,15 +43,19 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to key_core_n[*]
 
 #------------------------------------------------------------------------------
 # 8-digit 7-segment display: segments {g,f,e,d,c,b,a,dp}
+# Measured on the real board (see test/seg_check): PO[0]=a, PO[1]=b, PO[2]=c,
+# PO[3]=d, PO[4]=e, PO[5]=f, PO[6]=g, PO[7]=dp -- i.e. the OPPOSITE order of the
+# manual text "PO[7:0] = g,f,e,d,c,b,a,point". So the pin order below is reversed
+# on purpose: seg_n[7]=g -> PO[6], ... seg_n[0]=dp -> PO[7].
 #------------------------------------------------------------------------------
-set_location_assignment PIN_C2 -to seg_n[7]
-set_location_assignment PIN_D1 -to seg_n[6]
-set_location_assignment PIN_B3 -to seg_n[5]
-set_location_assignment PIN_A3 -to seg_n[4]
-set_location_assignment PIN_B5 -to seg_n[3]
-set_location_assignment PIN_A5 -to seg_n[2]
-set_location_assignment PIN_B7 -to seg_n[1]
-set_location_assignment PIN_B6 -to seg_n[0]
+set_location_assignment PIN_D1 -to seg_n[7]
+set_location_assignment PIN_B3 -to seg_n[6]
+set_location_assignment PIN_A3 -to seg_n[5]
+set_location_assignment PIN_B5 -to seg_n[4]
+set_location_assignment PIN_A5 -to seg_n[3]
+set_location_assignment PIN_B7 -to seg_n[2]
+set_location_assignment PIN_B6 -to seg_n[1]
+set_location_assignment PIN_C2 -to seg_n[0]
 
 #------------------------------------------------------------------------------
 # Digit enables: dig_n[0]=digit1 (rightmost) ... dig_n[7]=digit8
@@ -126,7 +130,7 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pio_in[*]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to buzzer
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to led_n[*]
 
-# 输出驱动强度 8 mA（消除“Missing drive strength”警告）
+# 输出驱动强度：输出驱动强度 8 mA（10CL006 的 3.3-V LVTTL 只支持 4/8 mA，12/16/24 mA 会被 Fitter 拒绝）
 set_instance_assignment -name CURRENT_STRENGTH_NEW "8MA" -to seg_n[*]
 set_instance_assignment -name CURRENT_STRENGTH_NEW "8MA" -to dig_n[*]
 set_instance_assignment -name CURRENT_STRENGTH_NEW "8MA" -to buzzer

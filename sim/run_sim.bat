@@ -39,6 +39,9 @@ if errorlevel 1 (
 )
 
 :modelsim_ready
+rem Prefer the writable modelsim.ini shipped with the project; the copy in the
+rem install dir may be read-only and vmap then prints a write error.
+if exist "%~dp0modelsim.ini" set "MODELSIM=%~dp0modelsim.ini"
 if exist work rmdir /s /q work
 vlib work
 if errorlevel 1 exit /b 1
