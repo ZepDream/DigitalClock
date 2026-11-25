@@ -35,8 +35,8 @@ set_location_assignment PIN_M15 -to clk50
 #------------------------------------------------------------------------------
 # Core board keys K1~K4 (active low)
 #------------------------------------------------------------------------------
-set_location_assignment PIN_P9  -to key_core_n[0]
-set_location_assignment PIN_N9  -to key_core_n[1]
+set_location_assignment PIN_P9 -to key_core_n[0]
+set_location_assignment PIN_N9 -to key_core_n[1]
 set_location_assignment PIN_M10 -to key_core_n[2]
 set_location_assignment PIN_P11 -to key_core_n[3]
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to key_core_n[*]
@@ -76,18 +76,18 @@ set_location_assignment PIN_T12 -to pi_in[15]
 set_location_assignment PIN_R13 -to pi_in[14]
 set_location_assignment PIN_T10 -to pi_in[13]
 set_location_assignment PIN_R11 -to pi_in[12]
-set_location_assignment PIN_T8  -to pi_in[11]
-set_location_assignment PIN_R9  -to pi_in[10]
-set_location_assignment PIN_T6  -to pi_in[9]
-set_location_assignment PIN_R7  -to pi_in[8]
-set_location_assignment PIN_T4  -to pi_in[7]
-set_location_assignment PIN_R5  -to pi_in[6]
-set_location_assignment PIN_K8  -to pi_in[5]
-set_location_assignment PIN_R3  -to pi_in[4]
-set_location_assignment PIN_N8  -to pi_in[3]
-set_location_assignment PIN_M8  -to pi_in[2]
-set_location_assignment PIN_P6  -to pi_in[1]
-set_location_assignment PIN_L7  -to pi_in[0]
+set_location_assignment PIN_T8 -to pi_in[11]
+set_location_assignment PIN_R9 -to pi_in[10]
+set_location_assignment PIN_T6 -to pi_in[9]
+set_location_assignment PIN_R7 -to pi_in[8]
+set_location_assignment PIN_T4 -to pi_in[7]
+set_location_assignment PIN_R5 -to pi_in[6]
+set_location_assignment PIN_K8 -to pi_in[5]
+set_location_assignment PIN_R3 -to pi_in[4]
+set_location_assignment PIN_N8 -to pi_in[3]
+set_location_assignment PIN_M8 -to pi_in[2]
+set_location_assignment PIN_P6 -to pi_in[1]
+set_location_assignment PIN_L7 -to pi_in[0]
 
 #------------------------------------------------------------------------------
 # Mode 9 keys 5~8: PIO[15:0]
@@ -114,8 +114,8 @@ set_location_assignment PIN_N5 -to pio_in[0]
 #------------------------------------------------------------------------------
 set_location_assignment PIN_T13 -to buzzer
 set_location_assignment PIN_T15 -to led_n[0]
-set_location_assignment PIN_M9  -to led_n[1]
-set_location_assignment PIN_L9  -to led_n[2]
+set_location_assignment PIN_M9 -to led_n[1]
+set_location_assignment PIN_L9 -to led_n[2]
 set_location_assignment PIN_T14 -to led_n[3]
 
 #------------------------------------------------------------------------------
@@ -130,11 +130,16 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pio_in[*]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to buzzer
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to led_n[*]
 
-# 输出驱动强度：输出驱动强度 8 mA（10CL006 的 3.3-V LVTTL 只支持 4/8 mA，12/16/24 mA 会被 Fitter 拒绝）
-set_instance_assignment -name CURRENT_STRENGTH_NEW "8MA" -to seg_n[*]
-set_instance_assignment -name CURRENT_STRENGTH_NEW "8MA" -to dig_n[*]
-set_instance_assignment -name CURRENT_STRENGTH_NEW "8MA" -to buzzer
-set_instance_assignment -name CURRENT_STRENGTH_NEW "8MA" -to led_n[*]
+# 输出驱动强度：数码管与蜂鸣器 8 mA（10CL006 的 3.3-V LVTTL 只支持 4/8 mA，12/16/24 mA 会被 Fitter 拒绝）
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to seg_n[*]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to dig_n[*]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to buzzer
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to led_n[*]
 
 set_global_assignment -name LAST_QUARTUS_VERSION "17.1.0 Standard Edition"
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
+
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top

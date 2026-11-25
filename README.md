@@ -207,3 +207,19 @@ git push
 Quartus 17.1 全编译：0 errors, 1 warning（AN447 3.3 V 提示）
 ModelSim-ASE 自检：==== ALL TESTS PASSED ==== / 82 PASS, 0 ERROR
 ```
+
+## 10. PDF 版文档
+
+`文档/` 下是上面所有 Markdown 生成的 PDF（23 份，中文文件名、带页码，图片/表格/代码/折叠答案都已展开），可直接打印或作为作业提交：
+
+- 教程 12 份：`文档/教程_00_总览与学习路线.pdf` … `文档/教程_11_附录.pdf`
+- 说明书 11 份：`文档/说明书_00_板级与显示配置.pdf` … `文档/说明书_10_Git双机同步说明.pdf`
+- 目录与页数见 [文档/README.md](文档/README.md)
+
+重新生成（改完 Markdown 后执行）：
+
+```bat
+python docs\tutorial\tools\md2pdf.py
+```
+
+依赖：`pip install markdown pypdf reportlab`，本机需装有 Chrome 或 Edge（脚本会自动找）。
